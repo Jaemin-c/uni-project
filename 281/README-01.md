@@ -1,11 +1,11 @@
 # Project 1: Back to the Ship! - EECS 281
 
-> 📌 **Note:** Due to university policies, the source code is not publicly available. This document provides a project overview and my personal reflections.
+> **Note:** Due to university policies, the source code is not publicly available. This document provides a project overview and my personal reflections.
 
-> 📌 **안내:** EECS 281 수업은 **모든 프로젝트를 개인이 단독으로 수행**하는 수업입니다.  
-> 본 프로젝트의 설계, 구현, 디버깅, 테스트까지 모든 과정을 **starter code 없이 직접 수행**했습니다.
+> **안내:** EECS 281 수업은 **모든 프로젝트를 개인이 단독으로 수행**하는 수업입니다.  
+> Starter code 없이 알고리즘과 코드 구조를 직접 설계하고 구현했습니다
 
-> 📌 **주의:** 학교 정책상 소스 코드는 비공개입니다. 이 문서에는 프로젝트 개요, 구현 방식, 그리고 개인적인 회고가 담겨 있습니다.
+> **주의:** 학교 정책상 소스 코드는 비공개입니다. 이 문서에는 프로젝트 개요, 구현 방식, 그리고 개인적인 회고가 담겨 있습니다.
 
 ---
 ## 📌 프로젝트 개요
@@ -16,7 +16,7 @@
 특히, 각 층에서 특정 좌표에 위치한 **엘리베이터(E)**를 통해 같은 좌표의 다른 층으로 이동할 수 있는 로직이 스펙의 핵심 중 하나였습니다.
 
 ---
-## 🚀 Features
+## Features
 - BFS (Breadth-First Search)를 통한 최단 경로 탐색
 - DFS (Depth-First Search)를 통한 깊이 우선 경로 탐색
 - 3D Maze에서 층간 이동 처리 (엘리베이터)
@@ -28,7 +28,7 @@
   - Coordinate List 모드 (L)
 - Robust한 에러 핸들링
 - 빠른 입출력을 위한 최적화
-## ⚙️ 사용한 알고리즘 및 데이터 구조
+## 사용한 알고리즘 및 데이터 구조
 - **BFS (너비 우선 탐색):** Queue 기반, 최단 경로를 보장
 - **DFS (깊이 우선 탐색):** Stack 기반, 깊게 파고드는 방식
 - **Deque:** Stack과 Queue의 동작을 하나의 공용 컨테이너로 통일
@@ -37,7 +37,7 @@
 
 ---
 
-## 🗂️ 핵심 구성 및 함수 설명
+## 핵심 구성 및 함수 설명
 
 ### `getOpts()`
 - 명령줄에서 전달된 옵션을 읽어
@@ -107,7 +107,7 @@
 
 ---
 
-## 🔄 **내 코드의 전체적인 흐름**
+## **내 코드의 전체적인 흐름**
 1. **명령어 옵션 파싱:** `getOpts()`에서 탐색 방법, 출력 형식, 도움말 처리
 2. **입력 데이터 처리:** `input()`으로 입력 모드에 따라 데이터 파싱
 3. **탐색 수행:** `search()`에서 BFS/DFS로 경로 탐색
