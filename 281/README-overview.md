@@ -30,7 +30,7 @@
 
 > Priority Queue를 활용한 **전자 주식 시장 시뮬레이터**  
 > 주문 매칭, 중앙값 계산, 트레이더 통계, 타임트래블러 분석 기능  
-> 상세 설명 및 설계: [프로젝트2A 상세보기](https://github.com/Jaemin-c/uni-project/blob/main/281/README-p2.md)
+> 상세 설명 및 설계: [프로젝트2A 상세보기](https://github.com/Jaemin-c/uni-project/blob/main/281/README-p2a.md)
 
 ---
 
@@ -38,7 +38,7 @@
 
 > 🛠 **Priority Queue를 직접 다양한 자료구조로 구현**  
 > Sorted Array, Binary Heap, Pairing Heap의 효율성과 구현 비교  
-> 상세 설명 및 설계: [프로젝트2B 상세보기](https://github.com/Jaemin-c/uni-project/blob/main/281/README-p2.md)
+> 상세 설명 및 설계: [프로젝트2B 상세보기]https://github.com/Jaemin-c/uni-project/blob/main/281/README-p2b.md)
 
 ---
 
