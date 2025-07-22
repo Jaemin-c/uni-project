@@ -1,7 +1,6 @@
 # EECS 281: Data Structures and Algorithms (University of Michigan)
 
-> **Note:** All projects were completed individually without starter code.  
-> In compliance with university policy, **source codes are not publicly available**.  
+> **Note:** In compliance with university policy, **source codes are not publicly available**.  
 > 프로젝트 개요, 설계 방식, 그리고 개인적인 회고만 포함되어 있습니다.
 
 > **안내:** EECS 281은 **자료구조와 알고리즘의 깊이 있는 이해 및 구현 능력**을 기르는 수업으로, 총 4개의 개인 프로젝트로 구성되어 있습니다.
