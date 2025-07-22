@@ -1,4 +1,4 @@
-## Project 2A: Stock - EECS 281
+## Project 2a: Stock - EECS 281
 
 > **Note:** Due to university policies, the source code is not publicly available. This document provides a project overview and my personal reflections.
 
