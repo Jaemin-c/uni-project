@@ -1,43 +1,108 @@
 ## Project 3: 281Bank - EECS 281
 
-> **Note:** Due to university policies, the source code is not publicly available. This document provides a project overview and my personal reflections.  
-> **안내:** EECS 281 수업은 **모든 프로젝트를 개인이 단독으로 수행**하는 수업입니다.  
-> 학교 정책상 소스 코드는 비공개입니다. 이 문서에는 프로젝트 개요, 구현 방식, 그리고 개인적인 회고가 담겨 있습니다.
+> **Note:** Due to university policies, the source code is not publicly available.  
+> This document provides a project overview, core design choices, and personal implementation notes.
+
+> **안내:** EECS 281은 **모든 프로젝트를 학생 개인이 독립적으로 수행해야 하는 과목**입니다.  
+> 학교 정책상 소스 코드는 외부 공개가 금지되어 있으며, 이 문서에는 프로젝트 개요 및 구현 방식, 회고를 포함합니다.
 
 ---
 
-**언어/기술:** C++, STL, Priority Queue, Custom Comparator, File I/O, Parsing  
-
-### 🔍 프로젝트 개요
-파일로 주어진 사용자 등록 정보와 다양한 명령어를 처리해, 은행 시스템을 시뮬레이션하는 프로젝트입니다.  
-사용자의 로그인/로그아웃, 거래 요청(place), 거래 실행, 잔고 조회 및 거래 내역 조회 등의 기능을 구현했습니다.  
-정해진 명세에 따라 오류 처리를 하고, 다양한 쿼리 명령을 통해 거래 내역 및 수익 요약을 출력합니다.
-
-### 주요 기능
-- **사용자 등록 및 로그인 관리:** 등록 파일에서 사용자 정보 로드, 로그인 상태 추적(IP 기반)
-- **거래 요청 처리 (`place`):** 타임스탬프 기반 실행 예약, 실행일 도달 시 거래 실행
-- **거래 수수료 계산:** 거래 금액, 수수료 유형, 장기 고객 여부에 따라 수수료 차등 부과
-- **명령어 처리:**
-  - `login`, `out`, `balance`: 사용자 인증 및 로그인 상태 기반 행동 처리
-  - `place`: 미래 실행 시점을 가진 거래 요청을 큐에 저장
-  - `$$$`: 현재 시점까지 실행 가능한 거래들을 모두 실행 후 쿼리 처리 단계로 진입
-- **쿼리 처리:**
-  - `l start end`: 특정 기간의 거래 출력
-  - `r start end`: 특정 기간 동안 은행의 수익 출력
-  - `h user`: 특정 사용자 거래 내역 출력
-  - `s timestamp`: 하루 동안의 거래 요약 출력
-- **에러 처리:**
-  - 이전 `place`보다 빠른 timestamp
-  - 실행일이 timestamp보다 이전인 경우
-- **명령줄 옵션:**
-  - `-f [filename]`: 등록 파일 입력
-  - `-v` / `--verbose`: 디버깅을 위한 상세 출력
-
-### 🗓 설계 및 구현
-- `Bank` 클래스를 중심으로 전체 로직 구현
-- 사용자 정보는 `unordered_map`으로 저장, 로그인 세션은 `unordered_set`으로 관리
-- 실행 대기 거래는 커스텀 comparator가 적용된 `priority_queue`로 관리 (정렬 기준: 실행 시점 + 등록 순서)
-- 날짜 처리를 위해 타임스탬프를 `uint64_t`로 직접 파싱 및 비교
-- 수수료 정책은 최소 $10, 최대 $450, 장기 고객(5년 이상) 할인 등 명세에 따라 계산
+**281Bank**는 사용자 등록 정보와 명령어 시퀀스를 처리하여,  
+로그인 세션, 거래 예약 및 실행, 거래 내역/수익 쿼리 등을 수행하는 **은행 시스템 시뮬레이터**입니다.
 
 ---
+
+### 사용 기술
+
+- **언어:** C++
+- **표준 라이브러리:** STL (unordered_map, unordered_set, priority_queue, stringstream 등)
+- **자료구조:**
+  - 해시맵 기반 사용자 관리
+  - 우선순위 큐 기반 거래 예약
+- **파싱/입출력:** `ifstream`, `std::cin`, 명령줄 인자 처리 (getopt)
+
+---
+
+### 주요 기능 및 동작 흐름
+
+#### 사용자 등록 정보 로드
+- `-f [filename]` 옵션을 통해 registration 파일을 입력으로 받음
+- 각 줄은 `timestamp|user_id|pin|balance` 형식이며, 사용자 정보를 해시맵(`unordered_map`)에 저장
+- 각 유저는 IP 기반 로그인 세션을 추적
+
+#### 명령어 처리 (`processCommands`)
+- 명령은 stdin을 통해 순차적으로 처리되며, 다음과 같은 유형이 있음:
+
+| 명령어      | 설명 |
+|-------------|------|
+| `login`     | 사용자 인증 (user_id + pin) 및 IP 로그인 |
+| `out`       | 해당 IP에서 사용자 로그아웃 |
+| `balance`   | 로그인 상태 확인 후 잔액 출력 |
+| `place`     | 미래 실행 예정 거래를 예약 큐에 추가 |
+| `$$$`       | 현재까지 실행 가능한 거래 모두 수행 후, 쿼리 모드 진입 |
+
+#### 거래 처리 (`place`, `processTransactions`)
+- 거래는 `timestamp`, `exec_date`, `sender`, `recipient`, `amount`, `fee_type`을 포함
+- `exec_date`가 `timestamp`보다 빠르면 에러 종료
+- 거래 큐(`priority_queue`)는 다음 기준으로 정렬:
+  1. 실행 시점 (exec_date 오름차순)
+  2. 등록 순서 (transaction_id 오름차순)
+
+- 실행 가능한 거래는 `executeTransaction()`에서 수행:
+  - 수수료 계산 (`calculateFee`)
+  - 잔액 조건 확인 후, sender/recipient의 잔액 갱신
+  - verbose 모드에서는 상세 정보 출력
+
+#### 🔹 쿼리 처리 (`processQueries`)
+- `$$$` 이후 입력되는 쿼리를 처리:
+
+| 명령어 | 설명 |
+|--------|------|
+| `l start end` | 특정 구간의 거래 내역 출력 |
+| `r start end` | 특정 구간 동안 은행이 수취한 총 수수료 출력 |
+| `h user_id`   | 사용자 기준 거래 내역 및 요약 출력 |
+| `s timestamp` | 해당 날짜의 거래 요약 및 수익 출력 |
+
+---
+
+### 에러 처리
+
+#### 필수 체크 항목
+- `place` 명령에서 이전보다 과거의 timestamp가 입력된 경우
+- `exec_date < timestamp`인 경우
+
+→ 이 경우에는 `cerr`로 에러 메시지를 출력하고 `exit(1)` 호출  
+→ 명시된 표준 에러 메시지를 사용해야 autograder가 인식 가능
+
+---
+
+### 수수료 정책 (`calculateFee`)
+- 기본 수수료는 `amount / 100`, 최소 $10, 최대 $450
+- 장기 고객(가입 5년 이상)은 25% 할인 적용
+- `fee_type == 's'`인 경우 수수료를 sender/recipient가 분담
+
+---
+
+### 내부 자료구조
+
+```cpp
+// 사용자 정보
+struct User {
+    uint64_t reg_timestamp;
+    std::string user_id;
+    std::string pin;
+    uint32_t starting_balance;
+    std::unordered_set<std::string> active_sessions;  // 현재 로그인 IP
+};
+
+// 거래 정보
+struct Transaction {
+    uint64_t timestamp;
+    std::string ip;
+    std::string sender, recipient;
+    uint32_t amount;
+    uint64_t exec_date;
+    char fee_type;
+    uint32_t transaction_id;
+};
