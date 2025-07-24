@@ -1,43 +1,144 @@
-## Project 3: 281Bank - EECS 281
+# Project 3: 281Bank - EECS 281
 
-> **Note:** Due to university policies, the source code is not publicly available. This document provides a project overview and my personal reflections.  
-> **안내:** EECS 281 수업은 **모든 프로젝트를 개인이 단독으로 수행**하는 수업입니다.  
-> 학교 정책상 소스 코드는 비공개입니다. 이 문서에는 프로젝트 개요, 구현 방식, 그리고 개인적인 회고가 담겨 있습니다.
+**281Bank**는 사용자 등록 정보를 기반으로 로그인 세션을 관리하고,  
+예약된 거래를 시간 기준으로 실행하며, 이후 다양한 질의(query)를 처리하는 **은행 시스템 시뮬레이터**입니다.
+
+> ⚠️ 소스 코드는 EECS 281 수업 정책상 공개할 수 없습니다.  
+> 이 문서는 구현 개요와 설계 요점, 사용 기술을 요약한 문서입니다.
+
+---
+
+## 프로젝트 개요
+
+이 프로젝트는 실시간 명령어 스트림을 받아 다음을 처리합니다:
+
+- 사용자 로그인/로그아웃 세션 관리 (IP 기반)
+- 미래 시점에 실행될 거래 예약 및 실행
+- 실행된 거래를 바탕으로 수수료 수익, 사용자 거래 내역 등 질의 응답
+
+즉, 단일 실행 환경에서 **상태를 유지하는(stateful)** 시스템을 설계하는 과제입니다.
 
 ---
 
-**언어/기술:** C++, STL, Priority Queue, Custom Comparator, File I/O, Parsing  
+## 사용 기술
 
-### 🔍 프로젝트 개요
-파일로 주어진 사용자 등록 정보와 다양한 명령어를 처리해, 은행 시스템을 시뮬레이션하는 프로젝트입니다.  
-사용자의 로그인/로그아웃, 거래 요청(place), 거래 실행, 잔고 조회 및 거래 내역 조회 등의 기능을 구현했습니다.  
-정해진 명세에 따라 오류 처리를 하고, 다양한 쿼리 명령을 통해 거래 내역 및 수익 요약을 출력합니다.
-
-### 주요 기능
-- **사용자 등록 및 로그인 관리:** 등록 파일에서 사용자 정보 로드, 로그인 상태 추적(IP 기반)
-- **거래 요청 처리 (`place`):** 타임스탬프 기반 실행 예약, 실행일 도달 시 거래 실행
-- **거래 수수료 계산:** 거래 금액, 수수료 유형, 장기 고객 여부에 따라 수수료 차등 부과
-- **명령어 처리:**
-  - `login`, `out`, `balance`: 사용자 인증 및 로그인 상태 기반 행동 처리
-  - `place`: 미래 실행 시점을 가진 거래 요청을 큐에 저장
-  - `$$$`: 현재 시점까지 실행 가능한 거래들을 모두 실행 후 쿼리 처리 단계로 진입
-- **쿼리 처리:**
-  - `l start end`: 특정 기간의 거래 출력
-  - `r start end`: 특정 기간 동안 은행의 수익 출력
-  - `h user`: 특정 사용자 거래 내역 출력
-  - `s timestamp`: 하루 동안의 거래 요약 출력
-- **에러 처리:**
-  - 이전 `place`보다 빠른 timestamp
-  - 실행일이 timestamp보다 이전인 경우
-- **명령줄 옵션:**
-  - `-f [filename]`: 등록 파일 입력
-  - `-v` / `--verbose`: 디버깅을 위한 상세 출력
-
-### 설계 및 구현
-- `Bank` 클래스를 중심으로 전체 로직 구현
-- 사용자 정보는 `unordered_map`으로 저장, 로그인 세션은 `unordered_set`으로 관리
-- 실행 대기 거래는 커스텀 comparator가 적용된 `priority_queue`로 관리 (정렬 기준: 실행 시점 + 등록 순서)
-- 날짜 처리를 위해 타임스탬프를 `uint64_t`로 직접 파싱 및 비교
-- 수수료 정책은 최소 $10, 최대 $450, 장기 고객(5년 이상) 할인 등 명세에 따라 계산
+- **언어:** C++
+- **표준 라이브러리:** `unordered_map`, `unordered_set`, `priority_queue`, `ifstream`, `stringstream`, `getopt` 등
+- **자료구조 설계:**
+  - 사용자 정보: `unordered_map`
+  - 로그인 세션: `unordered_set`
+  - 거래 예약 큐: `priority_queue` (커스텀 comparator)
+- **파싱 & 명령어 처리:** `getopt_long` 사용해 CLI 인자 처리
 
 ---
+
+## 프로그램 구조
+
+| 기능                     | 함수                                 | 설명                                                            |
+|--------------------------|--------------------------------------|-----------------------------------------------------------------|
+| 인자 파싱                | `getOpts()`                          | `-f`, `-v`, `--help` 옵션 처리                                  |
+| 등록 파일 로드           | `loadFile()`                         | 사용자 데이터 파일 파싱 (`timestamp|user_id|pin|balance`)       |
+| 명령어 루프              | `processCommands()`                  | `login`, `place`, `balance` 등 처리                             |
+| 거래 예약                | `handlePlaceTransaction()`           | 미래 거래 유효성 검증 및 큐에 저장                              |
+| 거래 실행                | `processTransactions()`              | 실행 가능한 거래를 순서대로 실행                                 |
+| 거래 실행 세부           | `executeTransaction()`               | 수수료 계산 및 잔액 갱신, verbose 출력 등 처리                  |
+| 질의 처리                | `processQueries()` 외 헬퍼 함수들    | `list`, `revenue`, `history`, `summary` 등 쿼리 지원            |
+
+---
+
+## 로그인 세션 관리
+
+- 모든 세션은 **IP 기반**으로 관리됩니다.
+- 사용자가 로그인하면 해당 IP가 `active_sessions`에 추가됩니다.
+- 이후의 명령(`balance`, `place` 등)은 로그인된 IP인지 확인 후 처리합니다.
+
+```cpp
+struct User {
+    std::string user_id, pin;
+    uint64_t reg_timestamp;
+    uint32_t starting_balance;
+    std::unordered_set<std::string> active_sessions; // 로그인 IP
+};
+```
+
+---
+
+## 거래 예약 및 실행
+
+- `place` 명령으로 예약된 거래는 다음 조건을 만족해야 큐에 추가됩니다:
+  - `exec_date >= timestamp`
+  - 이전 거래보다 `timestamp`가 빠르지 않아야 함
+- 모든 거래는 `priority_queue`에 저장되며, `exec_date`가 빠른 순 → `transaction_id` 순으로 정렬됩니다.
+
+```cpp
+struct Transaction {
+    uint64_t timestamp, exec_date;
+    std::string sender, recipient, ip;
+    uint32_t amount;
+    char fee_type; // 'f' = sender pays full, 's' = shared
+    uint32_t transaction_id;
+};
+```
+
+## 수수료 정책 (`calculateFee()`)
+
+- 기본 수수료: `amount / 100`  
+- 최소 \$10, 최대 \$450  
+- 가입 5년 이상 고객 → 수수료 25% 할인  
+- `fee_type == 's'`이면 송신자/수신자가 수수료를 절반씩 부담
+
+---
+
+## 명령어 요약
+
+### 트랜잭션 이전 (`processCommands()`)
+
+| 명령어     | 설명                                        |
+|------------|---------------------------------------------|
+| `login`    | 사용자 인증 후 IP 세션 추가                 |
+| `out`      | IP 세션 로그아웃                            |
+| `balance`  | 로그인 상태일 때 잔액 출력                  |
+| `place`    | 거래 예약 (미래 실행)                       |
+| `$$$`      | 현재까지 실행 가능한 거래를 모두 실행 후 쿼리 모드 진입 |
+
+### 쿼리 모드 (`processQueries()`)
+
+| 명령어        | 설명                                                         |
+|---------------|--------------------------------------------------------------|
+| `l start end` | 특정 기간 내의 거래 내역 출력 (`listTransactions`)           |
+| `r start end` | 기간 내 수수료 총액 출력 (`calculateRevenue`)               |
+| `h user_id`   | 특정 사용자의 거래 내역 출력 (`displayCustomerHistory`)     |
+| `s timestamp` | 특정 날짜의 거래 요약 및 수수료 출력 (`summarizeDay`)       |
+
+---
+
+## 에러 처리
+
+| 조건                                 | 처리 방식                                  |
+|--------------------------------------|--------------------------------------------|
+| `timestamp < 이전 timestamp`         | `exit(1)` + 에러 메시지 출력               |
+| `exec_date < timestamp`              | `exit(1)` + 에러 메시지 출력               |
+| 미등록 사용자 or 잘못된 IP           | 무시 또는 verbose 모드일 경우 경고 출력     |
+| `self-transfer`, 미래 3일 이상 예약 | 거래 무시 또는 verbose 알림                 |
+
+---
+
+## 설계 요점
+
+- **세션 인증 모델:** 사용자 상태를 유지하는 IP 기반 세션 모델 설계
+- **우선순위 큐:** 거래 실행 시점 기준으로 자동 정렬 및 효율적인 실행
+- **모듈 분리:** 명령 파싱, 거래 로직, 쿼리 응답 등 기능별 분리 구조
+- **시간 일관성:** 모든 시간은 정수형 `YYMMDDHHMMSS`로 정렬 및 비교 가능
+
+---
+
+## 회고
+
+이 프로젝트는 **상태 기반 시스템 설계**, **예약 이벤트 처리**, **사용자 인증 시뮬레이션**, **쿼리 처리** 등  
+복합적인 시스템 구조를 직접 설계하고 구현할 수 있는 좋은 기회였습니다.
+
+
+---
+
+> 본 프로젝트는 EECS 281 수업의 개인 과제로,  
+> 스펙에 맞춰 모든 기능을 C++로 직접 설계 및 구현하였습니다.
