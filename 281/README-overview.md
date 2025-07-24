@@ -41,6 +41,7 @@
 > 상세 설명 및 설계: [프로젝트2B 상세보기](https://github.com/Jaemin-c/uni-project/blob/main/281/README-p2b.md)
 
 ---
+
 ## Project 3
 > **시간 기반 금융 거래 시뮬레이터 구현**  
 > 사용자 인증, 예약 거래, 수수료 계산, 시간 구간별 쿼리를 포함한 은행 시스템  
