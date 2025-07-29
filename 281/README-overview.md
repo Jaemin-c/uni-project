@@ -49,8 +49,10 @@
 
 
 ## Project  4
-
-> (추후 업데이트 예정)
+> **여러 TSP 해법 구현 및 최적 경로 탐색기**
+> MST 기반 연결성 확인, 그리디 근사 경로 탐색, Branch & Bound 최적 해법까지
+> 세 가지 알고리즘을 비교 구현하여 정확도와 속도 간 트레이드오프를 학습
+> > 상세 설명 및 설계: [프로젝트4 상세보기](https://github.com/Jaemin-c/uni-project/blob/main/281/README-p4.md)
 
 ---
 
