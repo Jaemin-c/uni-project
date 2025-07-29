@@ -3,59 +3,93 @@
 > 소스 코드는 EECS 281 수업 정책상 공개할 수 없습니다.  
 > 이 문서는 구현 개요와 설계 요점, 사용 기술을 요약한 문서입니다.
 
-This project is a complete C++ implementation of three approaches to the **Traveling Salesman Problem (TSP)**.  
-Each mode offers a different balance of accuracy and performance:
+---
 
-- **MST** — Minimum Spanning Tree construction  
-- **FASTTSP** — Fast greedy heuristic for approximating TSP  
-- **OPTTSP** — Optimal TSP using branch and bound
+이 프로젝트는 **Traveling Salesman Problem (TSP)**, 즉 모든 지점을 한 번씩 방문하고 시작 지점으로 돌아오는 최단 경로를 찾는 문제를 세 가지 방식으로 해결합니다. 각 모드는 정확성과 속도 사이의 다른 균형을 지니며, 사용자는 명령줄 옵션으로 모드를 선택할 수 있습니다.
 
 ---
 
-### 1. MST Mode (Minimum Spanning Tree)
+## 지원 모드 및 개요
 
-Constructs a minimum spanning tree from a set of 2D coordinates.
+### MST 모드 (Minimum Spanning Tree)
 
-- **Input:** A list of coordinates.  
-- **Output:**  
-  - Total weight of the MST (2 decimal places)  
-  - List of edges (vertex pairs)
+2차원 평면 상의 좌표들을 기반으로 **최소 신장 트리 (MST)** 를 구성합니다.  
+Prim 알고리즘을 기반으로 구현되어 있으며, 우선순위 큐 없이 순차적으로 가장 작은 간선을 연결합니다.
 
-- **Special Condition:**  
-  If both land and sea points exist without a coastline point to connect them, the MST cannot be built.
+- **입력**: 정점들의 (x, y) 좌표 목록  
+- **출력**:
+  - MST의 총 거리 (소수점 2자리 고정)
+  - 연결된 정점 쌍 (오름차순 정렬)
 
-- **Implementation:**  
-  Uses Prim’s algorithm without a priority queue for determinism.
-
----
-
-### 2. FASTTSP Mode (Heuristic TSP)
-
-Provides a fast, approximate solution to the TSP using greedy insertion.
-
-- **Algorithm:**
-  - Start with an initial triangle.
-  - Iteratively insert each remaining point at the position where it causes the least increase in path length.
-
-- **Output:**
-  - Approximate total path length
-  - Vertex visitation order
+- **특수 조건**:  
+  육지(Land)와 바다(Sea)가 동시에 존재하지만 이를 연결해줄 해안선(Coastline)이 없는 경우, MST를 구성할 수 없으며 에러 메시지를 출력하고 종료합니다.
 
 ---
 
-### 3. OPTTSP Mode (Optimal TSP)
+### FASTTSP 모드 (근사 TSP)
 
-Finds the optimal (shortest possible) tour using branch and bound.
+빠른 실행 시간을 위해 **Greedy Insertion** 기법을 사용해 TSP를 근사적으로 해결합니다.
 
-- **Algorithm Steps:**
-  1. Start from a greedy FASTTSP tour as the upper bound.
-  2. Use recursive permutation generation (`genPerms()`).
-  3. Apply pruning with:
-     - Lower bound estimation using MST on unvisited vertices.
-     - Distance estimates from start and end of partial path.
+- **알고리즘 개요**:
+  1. 초기에는 세 개의 정점을 연결해 삼각형을 구성
+  2. 이후 각 나머지 정점을, 전체 경로 거리 증가가 가장 적은 위치에 삽입
 
-- **Output:**
-  - Optimal tour length
-  - Exact visiting order of vertices
+- **출력**:
+  - 근사 경로의 총 거리
+  - 정점 방문 순서
+
+- **특징**:
+  - 빠르게 결과를 도출할 수 있는 장점
+  - 정확한 최적해는 보장하지 않음
 
 ---
+
+### OPTTSP 모드 (최적 TSP)
+
+분기 한정 (Branch and Bound) 알고리즘을 통해 TSP의 **최적 경로**를 계산합니다.  
+완전 탐색 기반이지만, 다양한 조건을 통해 **가지치기 (pruning)** 하며 효율을 높입니다.
+
+- **핵심 로직**:
+  1. FASTTSP로 초기 경로를 구성해 상한값으로 사용
+  2. `genPerms()`를 통해 정점 순열을 재귀적으로 생성
+  3. 다음 조건으로 pruning 적용:
+     - 남은 정점들에 대해 MST 기반 하한(lower bound) 계산
+     - 현재 경로 시작점/끝점과 미방문 정점 사이의 최소 거리 추가
+
+- **출력**:
+  - 최적 경로의 총 거리
+  - 정확한 방문 순서
+
+- **특징**:
+  - 작은 입력에서는 최적해를 보장
+  - 입력 크기가 커질수록 계산 시간 증가 가능
+
+---
+
+## ⚠️ 참고사항
+
+- 좌표는 모두 2차원 정수 (x, y) 형태로 입력됩니다.
+- 출력은 항상 소수점 둘째 자리까지 고정 (`std::fixed << std::setprecision(2)`).
+- 프로그램은 C++ 표준 입출력을 사용하며, `--mode` 옵션으로 실행 모드를 선택할 수 있습니다.
+
+---
+
+## ✅ 실행 예시
+
+```bash
+./poke --mode MST < input.txt
+# 출력 예:
+# 1234.56
+# 0 1
+# 1 2
+...
+
+./poke --mode FASTTSP < input.txt
+# 출력 예:
+# 1357.79
+# 0 1 4 3 2 ...
+
+./poke --mode OPTTSP < input.txt
+# 출력 예:
+# 1298.44
+# 0 3 1 2 4 ...
