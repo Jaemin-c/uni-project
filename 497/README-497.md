@@ -104,24 +104,19 @@ Users register their Offered and Wanted skills, explore recommendations, browse 
 
 ---
 
-## Security Notes
-- **Passwords:** stored as **BCrypt hashes** (`User.__init__`), verified with `check_password()`
-- **Auth Guard:** `@login_required` on internal pages (discover/profile/messages/reviews/etc.)
-- **Authorization:** only review authors can delete their reviews
-- **Input sanity:** email uniqueness checks; `secure_filename` for uploads  
-  _Recommended additions:_ CSRF protection, file type/size allow-list, password strength & email format checks
-
----
-
 ## Local Development (Quick Start)
-```bash
-# 1) Create & activate venv
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+General Python Set-Up
+1. Install Python3.X
 
-# 2) Install deps
-pip install -r requirements.txt
+2. Run the following pip install -r requirements.txt
 
-# 3) Run app (dev)
-export FLASK_APP=routes.server:create_app
-flask run --debug
+Login
+1. Run the following 'python3 backend/database.py'
+
+2. Run the following 'python3 backend/app.py'
+
+3. A port should open up. Click to view the program in a local browser.
+
+4. Click 'Create Account' and enter the necessary information.
+
+5. Login with credentials used in signup.
