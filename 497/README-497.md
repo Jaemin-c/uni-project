@@ -32,13 +32,13 @@ Users register their Offered and Wanted skills, explore recommendations, browse 
 
 ---
 
-## Matching Logic (High-Level)
+## Matching Logic
 - **Priority:** users whose **Offered** skills intersect with **your Wanted** skills are listed first.
 - **Filters:** selected category match (string-contains) and **min rating** (integer threshold).
 
 ---
 
-## Data Model (Simplified)
+## Data Model
 - **User**
   - `email`, `name`, `password (BCrypt hash)`, `bio`, `profile_picture`, `preferred_categories`
   - relationships: `reviews_received`, `reviews_given`, `user_skills`
@@ -65,7 +65,7 @@ Users register their Offered and Wanted skills, explore recommendations, browse 
 
 ---
 
-## Routes (Blueprint Overview)
+## Routes 
 > Prefixes set in `server.py`. Function names from each module (selected list).
 
 ### Auth (`/auth`)
