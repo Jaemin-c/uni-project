@@ -48,11 +48,6 @@
 
 ---
 
-## 🚀 Usage Examples
-
-### miProxy (single server, no LB)
-```bash
-./miProxy -l 9000 -h 127.0.0.1 -p 8000 -a 0.5
 
 ## 🚀 Usage Examples
 
@@ -86,6 +81,4 @@ Load Balancer
 
 ## 🛠️ Languages & Tools
 - **C++17**, `select()` 기반 멀티플렉싱 I/O
-- **spdlog** (structured logging), **cxxopts** (CLI 옵션 파싱), **pugixml** (MPD 파싱), **boost::regex** (HTTP 요청 처리)
-- **Chrome/Firefox Network Throttling**을 통한 클라이언트 테스트  
-- (옵션) **Mininet & POX**로 Geo Load Balancer 환경 검증
+- **spdlog** (structured logging), **cxxopts** (CLI 옵션 파싱), **pugixml** (MPD 파싱), **boost::regex** (HTTP 요청 처리) 
