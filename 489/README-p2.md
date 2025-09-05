@@ -53,7 +53,8 @@
 
 ### miProxy (single server, no LB)
 ./miProxy -l 9000 -h 127.0.0.1 -p 8000 -a 0.5
-miProxy (with load balancer)
+
+### miProxy (with load balancer)
 ./miProxy -b -l 9000 -h 127.0.0.1 -p 9001 -a 0.5
 Load Balancer
 ## Round-Robin
