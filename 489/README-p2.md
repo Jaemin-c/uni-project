@@ -11,7 +11,7 @@
 - Load Balancer: Round-Robin 또는 Geographic Shortest Path 정책으로 서버를 배정.  
 ---
 
-**Algorithms / Focus:**  
+## Algorithms / Focus
 - HTTP/1.1 파싱 및 manifest/segment 요청 가로채기  
 - EWMA 기반 **throughput 추정** & 비트레이트 선택 규칙 (1.5× margin)  
 - `select()` 기반 멀티플렉싱으로 다중 클라이언트 처리  
