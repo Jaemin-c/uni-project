@@ -9,7 +9,13 @@
 - HTTP Proxy (**miProxy**)와 **Load Balancer**를 구현해 CDN 환경에서 **Adaptive Bitrate Streaming (ABR)**을 지원.  
 - miProxy: 클라이언트의 세그먼트 수신 속도를 추정하여 비트레이트를 동적으로 선택.  
 - Load Balancer: Round-Robin 또는 Geographic Shortest Path 정책으로 서버를 배정.  
+---
 
+**Algorithms / Focus:**  
+- HTTP/1.1 파싱 및 manifest/segment 요청 가로채기  
+- EWMA 기반 **throughput 추정** & 비트레이트 선택 규칙 (1.5× margin)  
+- `select()` 기반 멀티플렉싱으로 다중 클라이언트 처리  
+- 로드 밸런서 프로토콜 구현 (Round-Robin / Geographic Shortest Path) 
 ---
 
 ## Implementation Summary
