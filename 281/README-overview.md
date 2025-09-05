@@ -28,13 +28,13 @@
 
 ---
 
-## Project 3
+## Project 3: 281Bank
 > **시간 기반 금융 거래 시뮬레이터 구현**  
 > 사용자 인증, 예약 거래, 수수료 계산, 시간 구간별 쿼리를 포함한 은행 시스템  
 > 상세 설명 및 설계: [프로젝트3 상세보기](https://github.com/Jaemin-c/uni-project/blob/main/281/README-p3.md)
 
 
-## Project  4
+## Project  4: Pokemon
 > **여러 TSP 해법 구현 및 최적 경로 탐색기**
 > MST 기반 연결성 확인, 그리디 근사 경로 탐색, Branch & Bound 최적 해법까지
 > 세 가지 알고리즘을 비교 구현하여 정확도와 속도 간 트레이드오프를 학습

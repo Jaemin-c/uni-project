@@ -1,8 +1,7 @@
 # EECS 489 – Project 2: Adaptive Video Streaming via CDN (W2025)
 
 > **Notice**  
-> Source code is **not included** to respect academic integrity.  
-> 본 문서는 **소스 코드 없이** 프로젝트 설명, 설계 요약, 회고만 담고 있습니다.
+> 본 문서는 ** 코드 없이** 프로젝트 설명, 설계 요약, 회고만 담고 있습니다.
 
 ---
 
