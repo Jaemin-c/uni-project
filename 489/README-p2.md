@@ -51,15 +51,15 @@
 
 ## 🚀 Usage Examples
 
-### miProxy (single server, no LB)
+** miProxy (single server, no LB) **
 ./miProxy -l 9000 -h 127.0.0.1 -p 8000 -a 0.5
 miProxy (with load balancer)
 ./miProxy -b -l 9000 -h 127.0.0.1 -p 9001 -a 0.5
 Load Balancer
-# Round-Robin
+** Round-Robin **
 ./loadBalancer --rr -p 9001 -s sample_round_robin.txt
 
-# Geographic
+** Geographic **
 ./loadBalancer --geo -p 9001 -s sample_geography.txt
 
 
