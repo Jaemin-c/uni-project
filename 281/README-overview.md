@@ -5,20 +5,6 @@
 
 > **안내:** EECS 281은 **자료구조와 알고리즘의 깊이 있는 이해 및 구현 능력**을 기르는 수업으로, 총 4개의 개인 프로젝트로 구성되어 있습니다.
 
----
-
-## 📌 Projects Overview
-
-| Project | Title | Language | Algorithms / Focus |
-| --- | --- | --- | --- |
-| **1** | Back to the Ship! | C++ | BFS, DFS, 3D Maze Navigation |
-| **2A** | Stock Market Simulator | C++ | Priority Queue, Heap, Median Maintenance |
-| **2B** | Priority Queue Implementations | C++ | Sorted Array, Binary Heap, Pairing Heap |
-| **3** | 281Bank: Transaction System Simulator | C++ | File Parsing, Timestamp Comparison, Priority Queue, Fee Calculation, Session Tracking |
-| **4** | TBD | C++ | (작성 예정) |
-
----
-
 ## Project 1: Back to the Ship!
 
 > 3D 미로에서 BFS와 DFS로 경로 탐색 + 엘리베이터를 통한 층간 이동  
